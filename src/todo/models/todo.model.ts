@@ -1,13 +1,13 @@
 import { TodoStatusEnum } from '../enums/todo-status.enum';
 
 export class Todo {
-  id: number;
+  id: string;
   name: string;
   description: string;
   createdAt: Date;
   status: TodoStatusEnum;
   constructor(
-    id = 0,
+    id = 'uniqueString',
     name = '',
     description = '',
     date = new Date(),

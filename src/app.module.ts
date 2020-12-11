@@ -5,16 +5,33 @@ import { TestModule } from './test/test.module';
 import { TodoModule } from './todo/todo.module';
 import { LoggerMiddleware } from './middlwares/logger.middleware';
 import { HelmetMiddleware } from '@nest-middlewares/helmet';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
+import { TodoEntity } from './todo/entities/todo.entity';
+
+dotenv.config();
 
 @Module({
   imports: [
     TestModule,
-    TodoModule
+    TodoModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: 3306,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [
+        "dist/**/*.entity{.ts,.js}"
+      ],
+      synchronize: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule{
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       .apply(HelmetMiddleware).forRoutes('')

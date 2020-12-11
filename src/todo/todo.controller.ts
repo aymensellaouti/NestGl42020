@@ -3,6 +3,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoService } from './todo.service';
 import { FirstPipe } from '../pipes/first.pipe';
+import { TodoEntity } from './entities/todo.entity';
 
 
 
@@ -14,28 +15,34 @@ export class TodoController {
 
 
   @Get('')
-  getTodos() {
-    return this.todoService.getTodos();
+  getTodos(): Promise<TodoEntity[]> {
+    return this.todoService.findAllTodos();
   }
 
   @Get(':id')
   getTodoById(
-    @Param('id') id: string
+    @Param('id') id: number
   ) {
-    return this.todoService.getTodoById(id);
+    return this.todoService.findTodoById(id);
+  }
+
+  @Get('restore/:id')
+  restoreTodoById(
+    @Param('id') id: number
+  ) {
+    return this.todoService.restoreTodo(id);
   }
 
   @Post()
-  addTodo(
+  async addTodo(
     @Body(FirstPipe) newTodo: CreateTodoDto
-  ) {
-    console.log(typeof newTodo);
-    return this.todoService.addTodo(newTodo);
+  ): Promise<TodoEntity> {
+    return await this.todoService.addTodo(newTodo);
   }
 
   @Delete(':id')
   deleteTodo(
-    @Param('id') id: string
+    @Param('id') id: number
   ) {
     return this.todoService.deleteTodo(id);
   }
@@ -44,7 +51,7 @@ export class TodoController {
   updateTodo(
     @Body() newTodo: UpdateTodoDto,
     @Param('id') id: string
-  ) {
+  ): Promise<TodoEntity> {
     return this.todoService.updateTodo(id, newTodo);
   }
 

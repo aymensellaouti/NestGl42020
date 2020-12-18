@@ -5,6 +5,7 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Repository } from 'typeorm';
 import { TodoEntity } from './entities/todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../auth/entities/user.entity';
 
 @Injectable()
 export class TodoService {
@@ -62,8 +63,9 @@ export class TodoService {
     return todo;
   }
 
-  async addTodo(newTodo: CreateTodoDto): Promise<TodoEntity> {
+  async addTodo(newTodo: CreateTodoDto, user): Promise<TodoEntity> {
     const todo =  this.TodoRepository.create(newTodo);
+    todo.user = user;
     return await this.TodoRepository.save(todo);
   }
 

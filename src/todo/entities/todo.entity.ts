@@ -1,6 +1,15 @@
 import { TodoStatusEnum } from '../enums/todo-status.enum';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Timestamp } from '../../generics/timestamp';
+import { UserEntity } from '../../auth/entities/user.entity';
 
 @Entity('todo')
 export class TodoEntity extends Timestamp {
@@ -25,4 +34,14 @@ export class TodoEntity extends Timestamp {
   )
   status: TodoStatusEnum;
 
+  @ManyToOne(
+    type => UserEntity,
+    (user) => user.todos,
+    {
+      cascade: ['insert', 'update'],
+      nullable: true,
+      eager: true
+    }
+  )
+  user: UserEntity;
 }

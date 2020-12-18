@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoService } from './todo.service';
 import { FirstPipe } from '../pipes/first.pipe';
 import { TodoEntity } from './entities/todo.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { UserEntity } from '../auth/entities/user.entity';
 
 
 
@@ -15,7 +18,8 @@ export class TodoController {
 
 
   @Get('')
-  getTodos(): Promise<TodoEntity[]> {
+  getTodos(
+  ): Promise<TodoEntity[]> {
     return this.todoService.findAllTodos();
   }
 
@@ -25,28 +29,30 @@ export class TodoController {
   ) {
     return this.todoService.findTodoById(id);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Get('restore/:id')
   restoreTodoById(
     @Param('id') id: number
   ) {
     return this.todoService.restoreTodo(id);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async addTodo(
-    @Body(FirstPipe) newTodo: CreateTodoDto
+    @Body(FirstPipe) newTodo: CreateTodoDto,
+    @Req() request: Request
   ): Promise<TodoEntity> {
-    return await this.todoService.addTodo(newTodo);
+    const user = request.user;
+    return await this.todoService.addTodo(newTodo, user);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   deleteTodo(
     @Param('id') id: number
   ) {
     return this.todoService.deleteTodo(id);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   updateTodo(
     @Body() newTodo: UpdateTodoDto,

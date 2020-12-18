@@ -8,6 +8,7 @@ import { HelmetMiddleware } from '@nest-middlewares/helmet';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { TodoEntity } from './todo/entities/todo.entity';
+import { AuthModule } from './auth/auth.module';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ dotenv.config();
       ],
       synchronize: true,
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
